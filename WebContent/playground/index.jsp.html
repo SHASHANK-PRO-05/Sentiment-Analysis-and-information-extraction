@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sentiment Analysis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
+<script src="../js/jquery.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script language="javascript" type="text/javascript" src="../js/jqplot/jquery.jqplot.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../js/jqplot/jquery.jqplot.css" />
+<script type="text/javascript" src="../js/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h1><a href="#">Sentiment Analysis</a></h1>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="inner">
+					<ul class="nav">
+						<li><a href="../index.jsp">Home</a></li>
+						<li class="active"><a href="/playground/index.jsp">Playground</a></li>
+						<li><a href="/train/index.jsp">Training</a></li>
+						<li><a href="#">About</a></li>
+						<li><a href="#">Contact</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+ 		<div class="row">
+ 			<div class="span3"></div>
+ 			<div class="span6">
+		 		<section id="main-form">
+		 			<div style="padding-top: 10%; padding-bottom: 10%">
+		 				<div style="padding-bottom: 5%">
+			 				<img src="../img/head.png" class="img-rounded">
+			 			</div>
+			 			<center>
+				 			<form class="form-search" id="query_data" action="../SentimentServlet" method="get">
+				 				<div class="btn-group">
+								    <button class="btn btn-primary">Category</button>	
+								    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+								    <span class="caret"></span>
+								    </button>
+								    <ul class="dropdown-menu" name="choice">
+									    <li><a href="#">Movies</a></li>
+									    <li><a href="#">Gadgets</a></li>
+									    <li><a href="#">Topics</a></li>
+								    </ul>
+							    </div>
+						    	<input type="text" name="query" class="input-large search-query">
+						    	<button type="submit" class="btn btn-success">Go!</button>
+						    </form>
+
+						</center>
+					</div>
+				</section>
+		 	</div>
+		 	<div class="span3"></div>
+	 	</div>
+	 	<hr></hr>
+	 	<div class="row">
+	 		<div class="span12">
+	 			<div class="panel panel-primary">
+				  <div class="panel-heading">
+				    <h4 class="panel-title">Results Chart 1</h4>
+				  </div>
+				  <div class="panel-body">
+				  <div id="chart1" style="height:400px;"></div>  
+				  </div>
+				</div>
+					 			
+	 			<script>
+	 			$(document).ready(function(){
+				  var data = [
+				    ['Positive', 120],['Negative', 39], ['Cant Say', 14],
+				  ];
+				  var plot1 = jQuery.jqplot ('chart1', [data],
+				    {
+				      seriesColors: [ "#5CB85C", "#D2322D", "#ED9C28"],
+				      seriesDefaults: {
+				        // Make this a pie chart.
+				        renderer: jQuery.jqplot.PieRenderer,
+				        rendererOptions: {
+				          // Put data labels on the pie slices.
+				          // By default, labels show the percentage of the slice.
+				          showDataLabels: true
+				        },
+				      },
+			      legend: { show:true, location: 'w' }
+				    }
+				  );
+				});
+	 			</script>
+	 		</div>
+	 	</div>
+	 	<hr></hr>
+	 	<div class="row">
+	 		<div class="span3">
+	 			<h2>Hello 1</h2>
+	 		</div>
+	 		<div class="span3">
+	 			<h2>Hello 2</h2>
+	 		</div>
+	 		<div class="span3">
+	 			<h2>Hello 3</h2>
+	 		</div>
+	 		<div class="span3">
+	 			<h2>Hello 4</h2>
+	 		</div>
+	 	</div>
+	</div>
+	
+</body>
+</html> 
+ 

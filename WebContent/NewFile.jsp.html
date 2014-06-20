@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sentiment Analysis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script language="javascript" type="text/javascript"
+	src="js/jqplot/jquery.jqplot.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="js/jqplot/jquery.jqplot.css" />
+<script type="text/javascript"
+	src="js/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+<style>
+.list-group {
+	padding-left: 0;
+	margin-bottom: 20px;
+}
+
+.list-group-item {
+	position: relative;
+	display: block;
+	padding: 10px 15px;
+	margin-bottom: -1px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+}
+
+.list-group-item:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+.list-group-item:last-child {
+	margin-bottom: 0;
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+.list-group-item>.badge {
+	float: right;
+}
+
+.list-group-item>.badge+.badge {
+	margin-right: 5px;
+}
+
+a.list-group-item {
+	color: #555;
+}
+
+a.list-group-item .list-group-item-heading {
+	color: #333;
+}
+
+a.list-group-item:hover,a.list-group-item:focus {
+	text-decoration: none;
+	background-color: #f5f5f5;
+}
+
+a.list-group-item.active,a.list-group-item.active:hover,a.list-group-item.active:focus
+	{
+	z-index: 2;
+	color: #fff;
+	background-color: #428bca;
+	border-color: #428bca;
+}
+
+a.list-group-item.active .list-group-item-heading,a.list-group-item.active:hover .list-group-item-heading,a.list-group-item.active:focus .list-group-item-heading
+	{
+	color: inherit;
+}
+
+a.list-group-item.active .list-group-item-text,a.list-group-item.active:hover .list-group-item-text,a.list-group-item.active:focus .list-group-item-text
+	{
+	color: #e1edf7;
+}
+
+.list-group-item-success {
+	color: #3c763d;
+	background-color: #dff0d8;
+}
+
+a.list-group-item-success {
+	color: #3c763d;
+}
+
+a.list-group-item-success .list-group-item-heading {
+	color: inherit;
+}
+
+a.list-group-item-success:hover,a.list-group-item-success:focus {
+	color: #3c763d;
+	background-color: #d0e9c6;
+}
+
+a.list-group-item-success.active,a.list-group-item-success.active:hover,a.list-group-item-success.active:focus
+	{
+	color: #fff;
+	background-color: #3c763d;
+	border-color: #3c763d;
+}
+
+.list-group-item-info {
+	color: #31708f;
+	background-color: #d9edf7;
+}
+
+a.list-group-item-info {
+	color: #31708f;
+}
+
+a.list-group-item-info .list-group-item-heading {
+	color: inherit;
+}
+
+a.list-group-item-info:hover,a.list-group-item-info:focus {
+	color: #31708f;
+	background-color: #c4e3f3;
+}
+
+a.list-group-item-info.active,a.list-group-item-info.active:hover,a.list-group-item-info.active:focus
+	{
+	color: #fff;
+	background-color: #31708f;
+	border-color: #31708f;
+}
+
+.list-group-item-warning {
+	color: #8a6d3b;
+	background-color: #fcf8e3;
+}
+
+a.list-group-item-warning {
+	color: #8a6d3b;
+}
+
+a.list-group-item-warning .list-group-item-heading {
+	color: inherit;
+}
+
+a.list-group-item-warning:hover,a.list-group-item-warning:focus {
+	color: #8a6d3b;
+	background-color: #faf2cc;
+}
+
+a.list-group-item-warning.active,a.list-group-item-warning.active:hover,a.list-group-item-warning.active:focus
+	{
+	color: #fff;
+	background-color: #8a6d3b;
+	border-color: #8a6d3b;
+}
+
+.list-group-item-danger {
+	color: #a94442;
+	background-color: #f2dede;
+}
+
+a.list-group-item-danger {
+	color: #a94442;
+}
+
+a.list-group-item-danger .list-group-item-heading {
+	color: inherit;
+}
+
+a.list-group-item-danger:hover,a.list-group-item-danger:focus {
+	color: #a94442;
+	background-color: #ebcccc;
+}
+
+a.list-group-item-danger.active,a.list-group-item-danger.active:hover,a.list-group-item-danger.active:focus
+	{
+	color: #fff;
+	background-color: #a94442;
+	border-color: #a94442;
+}
+
+.list-group-item-heading {
+	margin-top: 0;
+	margin-bottom: 5px;
+}
+
+.list-group-item-text {
+	margin-bottom: 0;
+	line-height: 1.3;
+}
+</style>
+<script>
+	var finalResult = "";
+	var t = 1;
+	var movName;
+	$(document).ready(function() {
+		$("#loading").hide();
+	});
+	function al(id) {
+		var v = id;
+		id = id + '';
+		id = id.substr(1, id.length);
+		var objJSON = eval("(function(){return " + JSON.stringify(finalResult)
+				+ ";})()");
+		var keys = Object.keys(objJSON);
+		console.log(JSON.stringify(objJSON[keys[id]]));
+		$('#' + v).html('');
+
+		var nid = v + 'again';
+		var txt1 = "<div id='" + nid + "' style='height:190px' onclick='il("
+				+ v + ")'></div>";
+		$('#' + v).append(txt1);
+		var data = [ [ 'Positive', parseFloat(objJSON[keys[id]][0].positive) ],
+				[ 'Negative', parseFloat(objJSON[keys[id]][1].negative) ],
+				[ 'Cant Say', parseFloat("0") ], ];
+		var plot1 = jQuery.jqplot(nid, [ data ], {
+			seriesColors : [ "#5CB85C", "#D2322D", "#ED9C28" ],
+			seriesDefaults : {
+				renderer : jQuery.jqplot.PieRenderer,
+				rendererOptions : {
+					showDataLabels : true
+				},
+			},
+			legend : {
+				show : false,
+				location : 'w'
+			}
+		});
+
+	}
+	function il(id) {
+		var v = id;
+		id = id + '';
+		id = id.substr(1, id.length);
+		var objJSON = eval("(function(){return " + JSON.stringify(finalResult)
+				+ ";})()");
+		var keys = Object.keys(objJSON);
+		console.log(JSON.stringify(objJSON[keys[id]]));
+		$('#' + v).html('');
+
+		var txt1 = "<a class='thumbnail' onclick='al("
+				+ v
+				+ ")'><img src='"+ objJSON[keys[id]][4].image+"' style='height: 180px;' ></a>";
+		$('#' + v).append(txt1);
+
+	}
+	function toTitleCase(str) {
+		return str.replace("_", " ").replace(/\w\S*/g, function(txt) {
+			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+		});
+	}
+	function displayImages() {
+		$("#actors").html('');
+		var objJSON = eval("(function(){return " + JSON.stringify(finalResult)
+				+ ";})()");
+		var keys = Object.keys(objJSON);
+		for (var i = 0; i < keys.length; i++) {
+			var oo = keys[i] + '';
+			var id = '2' + i;
+			var roles = objJSON[oo][3].Role;
+			var rolesHTML = "";
+			roles
+					.forEach(function(entry) {
+						if (entry == 'A')
+							rolesHTML += " <span class='label label-info'>Actor</span> ";
+						if (entry == 'V')
+							rolesHTML += " <span class='label label-warning'>Actresses</span> ";
+						if (entry == 'D')
+							rolesHTML += " <span class='label label-danger'>Director</span> ";
+					});
+			var txt1 = "<div class='span4'><h4>"
+					+ toTitleCase(keys[i])
+					+ rolesHTML
+					+ "</h4><a href='#' class='thumbnail'>"
+					+ '<img id="'+id+'"src="'
+					+ objJSON[oo][4].image
+					+ '" style="height: 180px;"></a></div>';
+
+			$("#actors").append(txt1);
+		}
+	}
+	function displayGraphs() {
+		$("#actors").html('');
+		var objJSON = eval("(function(){return " + JSON.stringify(finalResult)
+				+ ";})()");
+		var keys = Object.keys(objJSON);
+		for (var i = 0; i < keys.length; i++) {
+			var oo = keys[i] + '';
+			var id = '2' + i;
+
+			var txt1 = "<div class='span4'><h3>" + keys[i].replace("_", " ")
+					+ "<h3><div id="+id+" style='height: 180px;'></div>";
+			$("#actors").append(txt1);
+			var data = [ [ 'Positive', parseFloat(objJSON[oo][0].positive) ],
+					[ 'Negative', parseFloat(objJSON[oo][1].negative) ],
+					[ 'Cant Say', parseFloat("0") ], ];
+			var plot1 = jQuery.jqplot(id, [ data ], {
+				seriesColors : [ "#5CB85C", "#D2322D", "#ED9C28" ],
+				seriesDefaults : {
+					renderer : jQuery.jqplot.PieRenderer,
+					rendererOptions : {
+						showDataLabels : true
+					},
+				},
+				legend : {
+					show : false,
+					location : 'w'
+				}
+			});
+		}
+	}
+	function call() {
+		if (t == 1) {
+			t = 0;
+			displayGraphs();
+		} else {
+			t = 1;
+			displayImages();
+		}
+	}
+	function set(p) {
+		document.getElementById("btn btn-primarybt1").innerHTML = p;
+		document.getElementById("hiddentext").value = p[0];
+	}
+	function getData() {
+
+		$("#actors").html('');
+
+		$("#loading").show();
+
+		$
+				.post(
+						"Servlet",
+						{
+							query : document.getElementById("search_box").value,
+							choice : document.getElementById("hiddentext").value
+
+						},
+						function(response) {
+							$("#addtitle").html('');
+							var toadd = "<h2 class='panel-title' id='title1'>Result for "
+									+ document.getElementById("search_box").value
+									+ "</h2>";
+							$("#addtitle").append(toadd);
+
+							console.log(JSON.stringify(response));
+							var objJSON = eval("(function(){return "
+									+ JSON.stringify(response) + ";})()");
+
+							var data = [
+									[ 'Positive', parseFloat(objJSON.positive) ],
+									[ 'Negative', parseFloat(objJSON.negative) ],
+									[ 'Cant Say', parseFloat(objJSON.neutral) ], ];
+							var plot1 = jQuery.jqplot('chart1', [ data ], {
+								seriesColors : [ "#5CB85C", "#D2322D",
+										"#ED9C28" ],
+								seriesDefaults : {
+									renderer : jQuery.jqplot.PieRenderer,
+									rendererOptions : {
+										showDataLabels : true
+									},
+								},
+								legend : {
+									show : true,
+									location : 'w'
+								}
+
+							});
+							if (document.getElementById("hiddentext").value == "T") {
+								$("#loading").hide();
+								$("#altSHow").hide();
+							} else {
+								$
+										.get(
+												"Servlet",
+												{
+													query : document
+															.getElementById("search_box").value,
+													choice : "C"
+												},
+												function(response) {
+													$("#addPurpose").html('');
+													var toadd = "<h2 class='panel-title'>Cast of movie</h2><br>";
+													$("#addPurpose").append(
+															toadd);
+													finalResult = response;
+													var objJSON = eval("(function(){return "
+															+ JSON
+																	.stringify(response)
+															+ ";})()");
+													var keys = Object
+															.keys(objJSON);
+													for (var i = 0; i < keys.length; i++) {
+														var oo = keys[i] + '';
+														var id = '2' + i;
+														var roles = objJSON[oo][3].Role;
+														var rolesHTML = "";
+														roles
+																.forEach(function(
+																		entry) {
+																	if (entry == 'A')
+																		rolesHTML += " <span class='label label-info'>Actor</span> ";
+																	if (entry == 'V')
+																		rolesHTML += " <span class='label label-warning'>Actresses</span> ";
+																	if (entry == 'D')
+																		rolesHTML += " <span class='label label-danger'>Director</span> ";
+																});
+														var txt1 = "<div class='span4'><h4>"
+																+ toTitleCase(keys[i])
+																+ rolesHTML
+																+ "</h4><div id='"+id+"'><a class='thumbnail' onclick='al("
+																+ id
+																+ ")'>"
+																+ '<img src="'
+													+ objJSON[oo][4].image
+													+ '" style="height: 180px;"></a></div></div>';
+
+														$("#actors").append(
+																txt1);
+														$("#loading").hide();
+
+													}
+												});
+								$
+										.get(
+												"Servlet",
+												{
+													query : document
+															.getElementById("search_box").value,
+													choice : "L"
+												},
+												function(responsee) {
+													var objJSONN = eval("(function(){return "
+															+ JSON
+																	.stringify(responsee)
+															+ ";})()");
+													var r = objJSONN.movies
+															+ '';
+													var str = r.split(',');
+													var t = "<h2>Movies Discussed:</h2>";
+													$("#addMovies").html('');
+													$("#addMovies").append(t);
+													$("#addHere").html('');
+													var html="<a class='list-group-item active' id='mainMovie'>"+document
+													.getElementById("search_box").value;+"</a>";
+													$("#addHere").append(html);
+													for (var ij = 0; ij < str.length; ij++) {
+														t = "<a href='http://www.imdb.com/find?q="+str[ij]+"&s=all' target='_blank' class='list-group-item'>"
+																+ str[ij]
+																+ "</a>";
+														$("#addHere").append(t);
+													}
+													document
+															.getElementById("search_box").value = "";
+
+												});
+							}
+						});
+	}
+</script>
+
+</head>
+<body>
+
+	<div class="container">
+		<h1>
+			<a href="#">Sentiment Analysis</a>
+		</h1>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="inner">
+					<ul class="nav">
+						<li><a href="/">Home</a></li>
+						<li class="active"><a href="/playground/">Playground</a></li>
+						<li><a href="/train/">Training</a></li>
+						<li><a href="#">About</a></li>
+						<li><a href="#">Contact</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<img border="0" id="loading" width="100%" height="100%"
+			src="http://www.eclip.ro/loading.gif">
+
+
+		<div class="row">
+			<div class="span3"></div>
+			<div class="span6">
+				<section id="main-form">
+					<div style="padding-top: 10%; padding-bottom: 10%">
+						<div style="padding-bottom: 5%">
+							<img src="img/head.png" class="img-rounded">
+						</div>
+						<center>
+							<form class="form-search">
+								<div class="btn-group">
+									<button class="btn btn-primary" id="btn btn-primarybt1">Category</button>
+									<button class="btn btn-primary dropdown-toggle"
+										data-toggle="dropdown">
+										<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><a href="#" onclick="set('Movies')">Movies</a></li>
+										<li><a href="#" onclick="set('Gadgets')">Gadgets</a></li>
+										<li><a href="#" onclick="set('Topics')">Topics</a></li>
+									</ul>
+								</div>
+								<input type="text" name="choice" id="hiddentext"
+									style="display: none"> <input id="search_box"
+									type="text" class="input-large search-query">
+								<button class="btn btn-success" onclick="getData()">Go!</button>
+							</form>
+
+						</center>
+					</div>
+				</section>
+			</div>
+			<div class="span3"></div>
+		</div>
+		<hr></hr>
+		<div class="row">
+			<div class="span12">
+				<div class="panel panel-primary">
+					<div class="panel-heading" id="addtitle"></div>
+					<div class="panel-body">
+						<div id="chart1" style="height: 400px;"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<hr></hr>
+		<button class="btn btn-success" onclick="call()" id="altSHow">Click
+			Me!</button>
+		<!-- actors and actresses -->
+		<br>
+		<div class="panel-heading" id="addPurpose"></div>
+		<div class="panel-body">
+			<div class="row" id="actors"></div>
+		</div>
+
+		<hr></hr>
+		<div class="panel-heading" id="addMovies"></div>
+		<div class="list-group" id="addHere">
+			<a class="list-group-item active" id="mainMovie"> </a>
+		</div>
+
+
+	</div>
+
+</body>
+</html>
